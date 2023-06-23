@@ -36,14 +36,14 @@
 # Note that some files in the distribution may carry their own copyright
 # notices.
 Name:           zeek-lts
-Version:        5.0.8
-Release:        2.1
+Version:        5.0.9
+Release:        1.1
 Summary:        Zeek is a powerful framework for network analysis and security monitoring
 Group:          Productivity/Networking/Diagnostic
 
 License:        BSD-3-Clause
 URL:            http://zeek.org
-Source0:        https://download.zeek.org/zeek-5.0.8.tar.gz
+Source0:        https://download.zeek.org/zeek-5.0.9.tar.gz
 Patch0:         install-symlink-old-cmake.patch
 Patch1:         spicy-flex.patch
 Requires:       zeek-lts-core = %{version}
@@ -181,8 +181,14 @@ Summary:       The Zeek Package Manager
 Group:         Productivity/Networking/Diagnostic
 Requires(pre):  /usr/sbin/groupadd, /usr/bin/getent
 Requires:      python3
-%if ! ( 0%{?centos_version} == 700 )
-Requires:      python3-semantic-version python3-gitpython
+# %if ! ( 0%{?centos_version} == 700 )
+# Requires:      python3-semantic-version python3-gitpython
+# %endif
+%if 0%{?rhel} == 8
+Requires:      python3-semantic_version python3-GitPython
+%endif
+%if 0%{?rhel} == 9
+Requires:      python3-semantic-version python3-GitPython
 %endif
 Requires:      zeek-lts-core = %{version}
 Requires:      zeek-lts-devel = %{version}
@@ -250,7 +256,7 @@ This is an experimental version of the future client application for managing Ze
 /usr/bin/getent group zeek >/dev/null || /usr/sbin/groupadd -r zeek
 
 %prep
-%setup -n zeek-5.0.8 -q
+%setup -n zeek-5.0.9 -q
 # some platforms do in-source builds when using cmake. I don't really care, so just patch the error out.
 find ./ -name "ProhibitInSourceBuild.cmake" | xargs -I file sh -c 'cat /dev/null > "file"'
 # %patch1 -p1
@@ -472,6 +478,9 @@ mkdir -p  %{?buildroot}/opt/zeek/share/zeek/site/packages/
 %doc CHANGES COPYING NEWS README VERSION
 
 %changelog
+* Fri Jun 23 2023 Jakub Bittner <jbittner@redhat.com> 5.0.9-0
+Update to Zeek 5.0.9
+Changed required packages for RHEL 8 and 9
 * Mon Feb 09 2015 Johanna Amann <build@xxon.net> 5.0.8-0
 Zeek build version specification
 * Wed Jan 28 2015 Johanna Amann <build@xxon.net> 2.3.2
